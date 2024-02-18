@@ -1,20 +1,45 @@
-struct Book {
-    title: &'static str,
-    author: &'static str,
+struct Book<'a> {
+    title: &'a str,
+    author: &'a str,
     page_count: u16,
 }
 
-struct Magazine {
-    title: &'static str,
+struct Magazine<'a> {
+    title: &'a str,
     issue: u8,
-    topic: &'static str,
+    topic: &'a str,
 }
 
-enum Publication {
-    Book(Book),
-    Magazine(Magazine)
+enum Publication<'a> {
+    Book(Book<'a>),
+    Magazine(Magazine<'a>)
 }
 
+fn print_publication_list_with_delete<'a>(publications: Vec<Publication>) {
+    for publication in publications {
+        match publication {
+            Publication::Book(book) => {
+                println!("Kitap: {} yazar: {}, {} sayfa", book.title, book.author, book.page_count);
+            },
+            Publication::Magazine(magazine) => {
+                println!("Dergi: {} - Sayı: {}, Konu: {}", magazine.title, magazine.issue, magazine.topic);
+            }
+        }
+    }
+}
+
+fn print_publication_list<'a>(publications: &Vec<Publication>) {
+    for publication in publications {
+        match publication {
+            Publication::Book(book) => {
+                println!("Kitap: {} yazar: {}, {} sayfa", book.title, book.author, book.page_count);
+            },
+            Publication::Magazine(magazine) => {
+                println!("Dergi: {} - Sayı: {}, Konu: {}", magazine.title, magazine.issue, magazine.topic);
+            }
+        }
+    }
+}
 fn main() {
     // create me a vec<Publication>
     let library: Vec<Publication> = vec![
@@ -29,26 +54,7 @@ fn main() {
             topic: "Economics",
         })
     ];
-    //"Kitap: [title] yazar: [author], [page_count] sayfa" ve dergiler için "Dergi: [title] - Sayı: [issue], Konu: [topic]" 
-    for item in library.iter() {
-        match item {
-            Publication::Book(book) => {
-                println!("Kitap: {} yazar: {}, {} sayfa", book.title, book.author, book.page_count);
-            },
-            Publication::Magazine(magazine) => {
-                println!("Dergi: {} - Sayı: {}, Konu: {}", magazine.title, magazine.issue, magazine.topic);
-            }
-        }
-    }
-
-    for item in library {
-        match item {
-            Publication::Book(book) => {
-                println!("Kitap: {} yazar: {}, {} sayfa", book.title, book.author, book.page_count);
-            },
-            Publication::Magazine(magazine) => {
-                println!("Dergi: {} - Sayı: {}, Konu: {}", magazine.title, magazine.issue, magazine.topic);
-            }
-        }
-    }
+    
+    print_publication_list(&library);
+    print_publication_list_with_delete(library);
 }
